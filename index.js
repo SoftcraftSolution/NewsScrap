@@ -13,17 +13,21 @@ async function scrapeForexLive() {
         const articles = [];
 
         $('.article-slot__wrapper').each((index, element) => {
-            const title = $(element).find('a').text().trim();
-            const link = $(element).find('a').attr('href');
+            const title = $(element).find('h3.article-slot__title a').text().trim();
+            const link = $(element).find('h3.article-slot__title a').attr('href');
             const image = $(element).find('img').attr('src');
-            const article=$(element).find('article').text().trim()
+            const tldr = $(element).find('ul.tldr li').text().trim();
+            const author = $(element).find('.publisher-details__publisher-name').text().trim();
+            const date = $(element).find('.publisher-details__date').text().trim();
 
             if (title && link && image) {
                 articles.push({
                     title,
                     link: `https://www.forexlive.com${link}`,
                     image,
-                    article
+                    description: tldr || 'No description available',
+                    author,
+                    date
                 });
             }
         });
@@ -34,6 +38,7 @@ async function scrapeForexLive() {
         return [];
     }
 }
+
 
 app.get('/api/scrape', async (req, res) => {
     const articles = await scrapeForexLive();
